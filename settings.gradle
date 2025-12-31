@@ -21,6 +21,6 @@ dependencyResolutionManagement {
 
 rootProject.name = "airboat"
 include ':app'
-include ':airboat'
+include ':core'
 include ':androidSub'
-include ':airboat-ktx'
+include ':core-ktx'
