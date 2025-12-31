@@ -4,3 +4,8 @@ plugins {
     alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.android.library) apply false
 }
+// build.gradle (Project)
+subprojects {
+    group = 'com.github.onlyajar'
+    // version 通常由 JitPack 用 Git Tag 自动设置，可不写
+}
