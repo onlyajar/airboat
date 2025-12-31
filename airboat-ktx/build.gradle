@@ -47,13 +47,13 @@ dependencies {
     androidTestImplementation libs.androidx.junit
     androidTestImplementation libs.androidx.espresso.core
 }
-
+group = 'com.github.onlyajar'
 afterEvaluate {
     publishing {
         publications {
             release(MavenPublication) {
                 from components.release
-                groupId = 'onlyajar.airboat'
+                groupId = 'onlyajar'
                 artifactId = 'airboat-ktx'
                 version = '0.0.1'
             }
