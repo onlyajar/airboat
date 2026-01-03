@@ -12,7 +12,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Airboat">
         <activity
-            android:name=".MainActivity"
+            android:name="onlyajar.airboat.page.PageActivity"
+            android:exported="false" />
+        <activity
+            android:name="onlyajar.airboat.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

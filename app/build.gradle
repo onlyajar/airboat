@@ -4,13 +4,13 @@ plugins {
 }
 
 android {
-    namespace 'onlyajar.airboat'
+    namespace 'onlyajar.airboat.app'
     compileSdk {
         version = release(36)
     }
 
     defaultConfig {
-        applicationId "onlyajar.airboat"
+        applicationId "onlyajar.airboat.app"
         minSdk 21
         targetSdk 36
         versionCode 1
