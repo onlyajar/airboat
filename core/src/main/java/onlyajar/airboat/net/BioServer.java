@@ -14,9 +14,9 @@ public class BioServer {
     ServerSocket aServerSocket;
     ExecutorService executorService = Executors.newCachedThreadPool();
 
-    private final KitSocketHandler socketHandler;
+    private final AcceptSocketHandler socketHandler;
 
-    public BioServer(int port, KitSocketHandler socketHandler) {
+    public BioServer(int port, AcceptSocketHandler socketHandler) {
         this.port = port;
         this.socketHandler = socketHandler;
     }
@@ -36,7 +36,7 @@ public class BioServer {
                 executorService.execute(new Runnable() {
                     @Override
                     public void run() {
-                        socketHandler.accept(new KitSocket(socket));
+                        socketHandler.accept(new AcceptSocket(socket));
                     }
                 });
             }

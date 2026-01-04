@@ -1,70 +1,67 @@
 package onlyajar.airboat.net;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import javax.net.ssl.SSLSocketFactory;
 
-import javax.net.ssl.SSLContext;
-
-public class TcpClient {
+public class TcpClient implements Closeable {
     private Builder builder;
+    private AcceptSocket kitSocket;
     private TcpClient(Builder builder){
         this.builder = builder;
     }
 
-    public byte[] process(byte[] data){
-        IoStatus step = IoStatus.CONNECT;
-        try {
-            KitSocket kitSocket;
-            if(builder.sslContext != null){
-                kitSocket = new KitSocket(builder.sslContext.getSocketFactory().createSocket(builder.ip, builder.port));
-            }else {
-                kitSocket =new KitSocket(new Socket(builder.ip, builder.port));
-            }
+    public void connect() throws IOException{
+        if(builder.sslSocketFactory != null){
+            kitSocket = new AcceptSocket(builder.sslSocketFactory.createSocket(builder.ip, builder.port));
+        }else {
+            kitSocket =new AcceptSocket(new Socket(builder.ip, builder.port));
+        }
+    }
 
-            if(builder.ioHandler != null)
-                builder.ioHandler.socketOpened(kitSocket);
-            InputStream inputStream = kitSocket.getInputStream();
-            OutputStream outputStream = kitSocket.getOutputStream();
+    public InputStream getInputStream() throws IOException{
+        return kitSocket.getInputStream();
+    }
+
+    public OutputStream getOutputStream() throws IOException{
+        return kitSocket.getOutputStream();
+    }
+
+    public byte[] process(byte[] data){
+        try {
+            InputStream inputStream = getInputStream();
+            OutputStream outputStream = getOutputStream();
             DataProtocol protocol = builder.protocol;
-            step = IoStatus.WRITE;
             protocol.onWrite(outputStream, data);
-            if(builder.ioHandler != null)
-                builder.ioHandler.messageSent(data);
-            step = IoStatus.READ;
-            byte[] receiveData = protocol.onRead(inputStream);
-            if(builder.ioHandler != null)
-                builder.ioHandler.messageReceived(receiveData);
-            try {
-                kitSocket.close();
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-            return receiveData;
+            return protocol.onRead(inputStream);
         } catch (IOException e) {
-            if(builder.ioHandler != null)
-                builder.ioHandler.exceptionCaught(e, step);
+            kitSocket.close();
         }
         return null;
+    }
+
+    @Override
+    public void close() {
+        kitSocket.close();
     }
 
     public static class Builder{
         String ip;
         int port;
-        SSLContext sslContext;
+        SSLSocketFactory sslSocketFactory;
         int timeOut;
         DataProtocol protocol;
-
-        IoHandler ioHandler;
 
         public Builder(String ip, int port) {
             this.ip = ip;
             this.port = port;
         }
 
-        public Builder setSSLContext(SSLContext sslContext){
-            this.sslContext = sslContext;
+        public Builder setSSLSocketFactory(SSLSocketFactory sslSocketFactory){
+            this.sslSocketFactory = sslSocketFactory;
             return this;
         }
 
@@ -76,11 +73,6 @@ public class TcpClient {
 
         public Builder setProtocol(DataProtocol protocol) {
             this.protocol = protocol;
-            return this;
-        }
-
-        public Builder setIoHandler(IoHandler ioHandler) {
-            this.ioHandler = ioHandler;
             return this;
         }
 

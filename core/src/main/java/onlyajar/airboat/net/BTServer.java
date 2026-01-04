@@ -21,8 +21,8 @@ public class BTServer {
     private BluetoothServerSocket bServerSocket;
     ExecutorService executorService = Executors.newCachedThreadPool();
     private BluetoothAdapter bluetoothAdapter;
-    private final KitSocketHandler kitSocketHandler;
-    public BTServer(KitSocketHandler kitSocketHandler) {
+    private final AcceptSocketHandler kitSocketHandler;
+    public BTServer(AcceptSocketHandler kitSocketHandler) {
         this.kitSocketHandler = kitSocketHandler;
         init();
     }
@@ -52,7 +52,7 @@ public class BTServer {
                 executorService.execute(new Runnable() {
                     @Override
                     public void run() {
-                        kitSocketHandler.accept(new KitSocket(socket));
+                        kitSocketHandler.accept(new AcceptSocket(socket));
                     }
                 });
             }

@@ -8,16 +8,14 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
-public class KitSocket implements Closeable {
+public class AcceptSocket implements Closeable {
     private Closeable closeable;
     private InputStream inputStream;
     private OutputStream outputStream;
-    public KitSocket(Socket socket){
+    public AcceptSocket(Socket socket){
         closeable = socket;
-
-
     }
-    public KitSocket(BluetoothSocket socket){
+    public AcceptSocket(BluetoothSocket socket){
         closeable = socket;
 
     }
@@ -40,17 +38,20 @@ public class KitSocket implements Closeable {
         return outputStream;
     }
     @Override
-    public void close() throws IOException {
-        if(inputStream != null){
-            inputStream.close();
-        }
-        if(outputStream != null){
-            outputStream.close();
+    public void close() {
+        try{
+            if(inputStream != null){
+                inputStream.close();
+            }
+            if(outputStream != null){
+                outputStream.close();
 
+            }
+            if(closeable != null){
+                closeable.close();
+            }
+        }catch (Exception e){
+            e.fillInStackTrace();
         }
-        if(closeable != null){
-            closeable.close();
-        }
-
     }
 }
