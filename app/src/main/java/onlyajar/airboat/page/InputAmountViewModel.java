@@ -12,4 +12,10 @@ public class InputAmountViewModel extends Component {
     public void update(String dt){
         dateTime.setValue(dt);
     }
+
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        System.out.println("InputAmountViewModel onCleared");
+    }
 }
