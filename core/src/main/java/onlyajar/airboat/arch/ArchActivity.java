@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import androidx.lifecycle.ViewModelProvider;
 import onlyajar.airboat.R;
 
 public class ArchActivity extends AppCompatActivity {
@@ -22,6 +23,7 @@ public class ArchActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         fragmentManager =  getSupportFragmentManager();
+        ViewModelProvider viewModelProvider = new ViewModelProvider(ArchActivity.this);
     }
 
     @Override

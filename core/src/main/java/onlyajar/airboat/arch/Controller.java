@@ -1,9 +1,14 @@
 package onlyajar.airboat.arch;
 
-import androidx.lifecycle.ViewModel;
+public class Controller extends Component {
 
-public class Controller extends ViewModel {
-    public void sendToPage(Data data){
-
+    public Controller(Messenger messenger) {
+        super(messenger);
+        messenger.getControllerData().observeForever(this);
     }
+
+    public void sendDataToPage(Data data){
+        getMessenger().sendToPage(data);
+    }
+
 }

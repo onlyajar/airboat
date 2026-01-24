@@ -4,10 +4,15 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import onlyajar.airboat.arch.Component;
+import onlyajar.airboat.arch.Messenger;
 
 public class InputAmountViewModel extends Component {
 
     public final MutableLiveData<String> dateTime = new MyMutableLiveData<>();
+
+    public InputAmountViewModel(Messenger messenger) {
+        super(messenger);
+    }
 
     public void update(String dt){
         dateTime.setValue(dt);
