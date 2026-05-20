@@ -7,7 +7,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Component extends ViewModel implements Observer<Data> {
+public class Component extends ViewModel implements Observer<EventData> {
     private final Map<Class<?>, Method> dataHandlerMap = new HashMap<>();
     private final Messenger messenger;
     public Component(Messenger messenger) {
@@ -22,23 +22,23 @@ public class Component extends ViewModel implements Observer<Data> {
     private void initDataHandler(){
         Method[] methods = this.getClass().getDeclaredMethods();
         for(Method m : methods){
-            if (m.getParameterCount() == 1 && Data.class.isAssignableFrom(m.getParameterTypes()[0])) {
+            if (m.getParameterCount() == 1 && EventData.class.isAssignableFrom(m.getParameterTypes()[0])) {
                 m.setAccessible(true);
                 dataHandlerMap.put(m.getParameterTypes()[0], m);
             }
         }
     }
     @Override
-    public void onChanged(Data data) {
-        Method method =  dataHandlerMap.get(data.getClass());
+    public void onChanged(EventData eventData) {
+        Method method =  dataHandlerMap.get(eventData.getClass());
         if (method != null) {
             try {
-                method.invoke(this, data);
+                method.invoke(this, eventData);
             } catch (Exception e) {
                 //
             }
         }else {
-            System.out.println(data.getClass().getSimpleName());
+            System.out.println(eventData.getClass().getSimpleName());
         }
     }
 

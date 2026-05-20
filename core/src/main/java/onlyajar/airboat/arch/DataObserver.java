@@ -1,5 +1,5 @@
 package onlyajar.airboat.arch;
 
-public interface DataObserver<T extends Data> {
+public interface DataObserver<T extends EventData> {
     void OnReceiveData(T t);
 }

@@ -7,8 +7,8 @@ public class Controller extends Component {
         messenger.getControllerData().observeForever(this);
     }
 
-    public void sendDataToPage(Data data){
-        getMessenger().sendToPage(data);
+    public void sendDataToPage(EventData eventData){
+        getMessenger().sendToPage(eventData);
     }
 
 }

@@ -1,6 +1,6 @@
 package onlyajar.airboat.arch;
 
-public class Data {
+public class EventData {
     public void HandlerData(){
     }
 }

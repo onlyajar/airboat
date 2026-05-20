@@ -7,8 +7,8 @@ public class PageViewModel extends Component {
         messenger.getPageData().observeForever(this);
     }
 
-    public void sendDataToController(Data data){
-        getMessenger().sendToController(data);
+    public void sendDataToController(EventData eventData){
+        getMessenger().sendToController(eventData);
     }
 
 }

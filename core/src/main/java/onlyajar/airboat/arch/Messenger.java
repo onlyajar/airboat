@@ -4,25 +4,25 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 public final class Messenger extends ViewModel {
-    private final MutableLiveData<Data> pageData = new MutableLiveData<>();
-    private final MutableLiveData<Data> controllerData = new MutableLiveData<>();
+    private final MutableLiveData<EventData> pageData = new MutableLiveData<>();
+    private final MutableLiveData<EventData> controllerData = new MutableLiveData<>();
 
 
 
-    public MutableLiveData<Data> getPageData() {
+    public MutableLiveData<EventData> getPageData() {
         return pageData;
     }
 
-    public MutableLiveData<Data> getControllerData() {
+    public MutableLiveData<EventData> getControllerData() {
         return controllerData;
     }
 
-    public void sendToController(Data data) {
-        controllerData.setValue(data);
+    public void sendToController(EventData eventData) {
+        controllerData.setValue(eventData);
     }
 
-    public void sendToPage(Data data) {
-        pageData.setValue(data);
+    public void sendToPage(EventData eventData) {
+        pageData.setValue(eventData);
     }
 }
 
