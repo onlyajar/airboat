@@ -35,8 +35,8 @@ android {
 }
 
 dependencies {
-    implementation libs.androidx.appcompat
-    implementation libs.material
+    implementation libs.startup
+    compileOnly libs.androidx.appcompat
     compileOnly project(':androidSub')
     testImplementation libs.junit
     androidTestImplementation libs.androidx.junit

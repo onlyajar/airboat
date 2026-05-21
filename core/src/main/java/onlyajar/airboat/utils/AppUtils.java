@@ -1,11 +1,12 @@
 package onlyajar.airboat.utils;
 
-import android.annotation.SuppressLint;
-import android.app.AppGlobals;
 import android.app.Application;
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+
+import onlyajar.airboat.runtime.AppRuntime;
 
 public final class AppUtils {
     private AppUtils() {
@@ -13,30 +14,24 @@ public final class AppUtils {
     }
 
     public static <T extends Application> T getApplication() {
-        return (T) AppGlobals.getInitialApplication();
+        return (T) AppRuntime.getApplication();
     }
 
-    @SuppressLint("PrivateApi")
     public static String getAppName() {
         try {
-            Context context = getApplication();
+            Context context = AppRuntime.getApplication();
             PackageManager packageManager = context.getPackageManager();
-            PackageInfo packageInfo = packageManager.getPackageInfo(context.getPackageName(), 0);
-            int labelRes = packageInfo.applicationInfo.labelRes;
-            return context.getResources().getString(labelRes);
+            ApplicationInfo applicationInfo = packageManager.getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
+            return packageManager.getApplicationLabel(applicationInfo).toString();
         } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    public static String getInitialPackage() {
-        return AppGlobals.getInitialPackage();
-    }
-
     public static int getVersionCode() {
         try {
-            Context context = getApplication();
+            Context context = AppRuntime.getApplication();
             PackageManager packageManager = context.getPackageManager();
             PackageInfo packageInfo = packageManager.getPackageInfo(context.getPackageName(), 0);
             return packageInfo.versionCode;
@@ -48,7 +43,7 @@ public final class AppUtils {
 
     public static String getVersionName() {
         try {
-            Context context = getApplication();
+            Context context = AppRuntime.getApplication();
             PackageManager packageManager = context.getPackageManager();
             PackageInfo packageInfo = packageManager.getPackageInfo(context.getPackageName(), 0);
             return packageInfo.versionName;
@@ -58,7 +53,4 @@ public final class AppUtils {
         return null;
     }
 
-    public static int getIntCoreSetting(String key, int defaultValue) {
-        return AppGlobals.getIntCoreSetting(key, defaultValue);
-    }
 }

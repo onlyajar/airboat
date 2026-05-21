@@ -101,7 +101,7 @@ public class TlvData {
      */
     public String toPrettyString(int indent) {
         StringBuilder sb = new StringBuilder();
-        sb.repeat("  ", Math.max(0, indent));
+        for (int i = 0; i < indent; i++) sb.append("  ");
         if (isConstructed()) {
             sb.append(String.format("[%s] Constructed (%d children)\n", getTagHex(), children.size()));
             for (TlvData child : children) {

@@ -12,6 +12,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import onlyajar.airboat.app.R;
 import onlyajar.airboat.arch.ArchActivity;
+import onlyajar.airboat.utils.AppUtils;
 
 public class PageActivity extends ArchActivity {
 
@@ -26,6 +27,7 @@ public class PageActivity extends ArchActivity {
             return insets;
         });
         addFragment(new InputAmountFragment(), R.id.fragment_container_view, true);
+        System.out.println(AppUtils.getAppName());
 //        new Handler(Looper.getMainLooper()).postDelayed(()->{
 //            addFragment(new InputTipFragment(), R.id.fragment_container_view, true);
 //        }, 5000);

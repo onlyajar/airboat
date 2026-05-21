@@ -6,7 +6,15 @@ public final class StringUtils {
     }
 
     public static boolean isBlank(String s){
-        return s.trim().isEmpty();
+        return s == null || s.trim().isEmpty();
+    }
+
+    public static boolean isNotEmpty(String s){
+        return !isEmpty(s);
+    }
+
+    public static boolean isNotBlank(String s){
+        return !isBlank(s);
     }
 
     public static boolean isZero( String s ) {
