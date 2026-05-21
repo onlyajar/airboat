@@ -17,7 +17,7 @@ public class BerTlvTest {
                 .addPrimitive("82",   "1980")                 // AIP
                 .addPrimitive("94",   "08010100")             // AFL (多字节 tag 测试)
                 .addConstructed("70", b -> b                  // EMV Template
-                        .addPrimitive("57", "4761739001010010D25122011234567890F")
+                        .addPrimitive("57", "4761739001010010D25122011234567890")
                         .addPrimitive("5A", "4761739001010010")
                         .addConstructed("70", b2 -> b2            // 嵌套 Template
                                 .addPrimitive("9F6C", "00")

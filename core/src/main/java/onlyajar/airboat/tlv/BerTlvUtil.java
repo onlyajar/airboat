@@ -7,40 +7,46 @@ import java.util.Arrays;
  */
 public final class BerTlvUtil {
 
-    private BerTlvUtil() {}
+    private static final char[] HEX_CHARS = "0123456789ABCDEF".toCharArray();
+    private static final int[] HEX_VAL = new int[128];
 
-    // ======================== Length 编码 ========================
-
-    /**
-     * 将长度值编码为 BER 长度字节数组
-     *
-     * BER 长度规则:
-     *   - 短格式: 0x00 ~ 0x7F → 1 字节
-     *   - 长格式: 0x81 + 1字节  (128~255)
-     *             0x82 + 2字节  (256~65535)
-     *             0x83 + 3字节  (65536~16777215)
-     */
-    public static byte[] encodeLengthBytes(int length) {
-        if (length < 0) throw new IllegalArgumentException("Length cannot be negative: " + length);
-
-        if (length <= 0x7F) {
-            return new byte[]{(byte) length};
-        } else if (length <= 0xFF) {
-            return new byte[]{(byte) 0x81, (byte) length};
-        } else if (length <= 0xFFFF) {
-            return new byte[]{(byte) 0x82, (byte) (length >> 8), (byte) length};
-        } else if (length <= 0xFFFFFF) {
-            return new byte[]{(byte) 0x83,
-                    (byte) (length >> 16), (byte) (length >> 8), (byte) length};
-        } else {
-            throw new IllegalArgumentException("Length too large: " + length);
-        }
+    static {
+        Arrays.fill(HEX_VAL, -1);
+        for (int i = '0'; i <= '9'; i++) HEX_VAL[i] = i - '0';
+        for (int i = 'a'; i <= 'f'; i++) HEX_VAL[i] = i - 'a' + 10;
+        for (int i = 'A'; i <= 'F'; i++) HEX_VAL[i] = i - 'A' + 10;
     }
+    public static String bytesToHex(byte[] bytes) {
+        char[] hex = new char[bytes.length * 2];
+        for (int i = 0; i < bytes.length; i++) {
+            int v = bytes[i] & 0xFF;
+            hex[i * 2]     = HEX_CHARS[v >>> 4];
+            hex[i * 2 + 1] = HEX_CHARS[v & 0x0F];
+        }
+        return new String(hex);
+    }
+
+    public static byte[] hexToBytes(String hex) {
+        int len = hex.length();
+        byte[] bytes = new byte[len / 2];
+        for (int i = 0; i < len; i += 2) {
+            int hi = HEX_VAL[hex.charAt(i)];
+            int lo = HEX_VAL[hex.charAt(i + 1)];
+            if (hi == -1 || lo == -1) throw new IllegalArgumentException("Invalid hex char");
+            bytes[i / 2] = (byte) ((hi << 4) | lo);
+        }
+        return bytes;
+    }
+
+    private BerTlvUtil() {}
 
     // ======================== Tag 解析 ========================
 
     /**
-     * 从 offset 开始读取一个完整的 Tag
+     * 1字节: b5~b1 ≠ 11111
+     * 多字节: 首字节 b5~b1 = 11111,
+     * 后续字节 b7=1继续, b7=0结束
+     * tag第一个字节b6 = 0 → Primitive, b6 = 1 → Constructed
      * @return tag 字节数组
      */
     public static byte[] parseTag(byte[] data, int offset) {
@@ -63,6 +69,30 @@ public final class BerTlvUtil {
         }
 
         return Arrays.copyOfRange(data, offset, end);
+    }
+    /**
+     * 将长度值编码为 BER 长度字节数组
+     * BER 长度规则:
+     *   - 短格式: 0x00 ~ 0x7F → 1 字节
+     *   - 长格式: 0x81 + 1字节  (128~255)
+     *             0x82 + 2字节  (256~65535)
+     *             0x83 + 3字节  (65536~16777215)
+     */
+    public static byte[] encodeLengthBytes(int length) {
+        if (length < 0) throw new IllegalArgumentException("Length cannot be negative: " + length);
+
+        if (length <= 0x7F) {
+            return new byte[]{(byte) length};
+        } else if (length <= 0xFF) {
+            return new byte[]{(byte) 0x81, (byte) length};
+        } else if (length <= 0xFFFF) {
+            return new byte[]{(byte) 0x82, (byte) (length >> 8), (byte) length};
+        } else if (length <= 0xFFFFFF) {
+            return new byte[]{(byte) 0x83,
+                    (byte) (length >> 16), (byte) (length >> 8), (byte) length};
+        } else {
+            throw new IllegalArgumentException("Length too large: " + length);
+        }
     }
 
     /**

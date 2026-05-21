@@ -2,24 +2,25 @@ package onlyajar.airboat.tlv;
 import java.util.*;
 
 /**
- * ┌──────────┬───────────────────────────────────────────┐
- * │  字段     │  编码规则                                 │
- * ├──────────┼───────────────────────────────────────────┤
- * │  Tag     │  1字节: b5~b1 ≠ 11111                     │
- * │          │  多字节: 首字节 b5~b1 = 11111,             │
- * │          │  后续字节 b7=1继续, b7=0结束              │
- * ├──────────┼───────────────────────────────────────────┤
- * │  Length  │  b7=0: 短格式, 值 = b6~b0   (0~127)      │
- * │          │  b7=1: 长格式, b6~b0 = 后续字节数         │
- * │          │   0x81+1字节 → 128~255                    │
- * │          │   0x82+2字节 → 256~65535                  │
- * │          │   0x83+3字节 → 65536~16777215             │
- * ├──────────┼───────────────────────────────────────────┤
- * │  Value   │  基本编码 (Primitive): 原始数据           │
- * │          │  构造编码 (Constructed): 嵌套的 TLV 序列  │
- * ├──────────┼───────────────────────────────────────────┤
- * │  Tag 判断│  b6 = 0 → Primitive, b6 = 1 → Constructed│
- * └──────────┴───────────────────────────────────────────┘
+ * ┌──────────┬───────────────────────────────────────────
+ * │  字段     │  编码规则
+ * ├──────────┼───────────────────────────────────────────
+ * │  Tag     │  1字节: b5~b1 ≠ 11111
+ * │          │  多字节: 首字节 b5~b1 = 11111,
+ * │          │  后续字节 b7=1继续, b7=0结束
+ * │          │   b6 = 0 → Primitive, b6 = 1 → Constructed
+ * ├──────────┼───────────────────────────────────────────
+ * │  Length  │  b7=0: 短格式, 值 = b6~b0   (0~127)
+ * │          │  b7=1: 长格式, b6~b0 = 后续字节数
+ * │          │   0x81+1字节 → 128~255
+ * │          │   0x82+2字节 → 256~65535
+ * │          │   0x83+3字节 → 65536~16777215
+ * ├──────────┼───────────────────────────────────────────
+ * │  Value   │  基本编码 (Primitive): 原始数据
+ * │          │  构造编码 (Constructed): 嵌套的 TLV序列
+ * ├──────────┼───────────────────────────────────────────
+ * │  Tag type│
+ * └──────────┴───────────────────────────────────────────
  * 表示一个 BER-TLV 数据对象
  */
 public class TlvData {
@@ -38,7 +39,7 @@ public class TlvData {
     // 构造节点（含子节点）
     public TlvData(byte[] tag, List<TlvData> children) {
         this.tag = Objects.requireNonNull(tag);
-        this.children = Collections.unmodifiableList(new ArrayList<>(children));
+        this.children = List.copyOf(children);
         this.value = null;
     }
 
@@ -100,7 +101,7 @@ public class TlvData {
      */
     public String toPrettyString(int indent) {
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < indent; i++) sb.append("  ");
+        sb.repeat("  ", Math.max(0, indent));
         if (isConstructed()) {
             sb.append(String.format("[%s] Constructed (%d children)\n", getTagHex(), children.size()));
             for (TlvData child : children) {
