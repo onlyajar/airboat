@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 
 import onlyajar.airboat.runtime.AppRuntime;
 
@@ -27,6 +28,18 @@ public final class AppUtils {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static int getApIcon() {
+        try {
+            Context context = AppRuntime.getApplication();
+            PackageManager packageManager = context.getPackageManager();
+            ApplicationInfo applicationInfo = packageManager.getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
+            return applicationInfo.icon;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return android.R.mipmap.sym_def_app_icon;
     }
 
     public static int getVersionCode() {

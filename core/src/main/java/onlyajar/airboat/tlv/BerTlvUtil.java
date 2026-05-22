@@ -16,6 +16,7 @@ public final class BerTlvUtil {
         for (int i = 'a'; i <= 'f'; i++) HEX_VAL[i] = i - 'a' + 10;
         for (int i = 'A'; i <= 'F'; i++) HEX_VAL[i] = i - 'A' + 10;
     }
+
     public static String bytesToHex(byte[] bytes) {
         char[] hex = new char[bytes.length * 2];
         for (int i = 0; i < bytes.length; i++) {

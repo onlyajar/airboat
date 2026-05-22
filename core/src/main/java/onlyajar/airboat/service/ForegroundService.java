@@ -4,6 +4,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.Build;
@@ -13,6 +14,8 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import onlyajar.airboat.utils.AppUtils;
 
 public abstract class ForegroundService extends Service {
 
@@ -51,15 +54,15 @@ public abstract class ForegroundService extends Service {
     }
 
     protected int getNotificationIcon() {
-        return android.R.mipmap.sym_def_app_icon;
+        return AppUtils.getApIcon();
     }
 
     protected String getNotificationName() {
-        return this.getClass().getSimpleName();
+        return AppUtils.getAppName();
     }
 
     protected int getNotificationID() {
-        return 9999;
+        return 99;
     }
 
     protected String getNotificationTitle() {
@@ -107,7 +110,8 @@ public abstract class ForegroundService extends Service {
                     .setContentTitle(getNotificationTitle())
                     .setContentText(getNotificationContext())
                     .setSmallIcon(getNotificationIcon())
-                    .setPriority(NotificationCompat.PRIORITY_MAX);
+                    .setPriority(NotificationCompat.PRIORITY_MAX)
+                    .setOngoing(true);
             for (Map.Entry<String, ActionInfo> entry : actionInfos.entrySet()) {
                 notification.addAction(entry.getValue().icon, entry.getValue().title,
                         PendingIntent.getService(ForegroundService.this, 0, entry.getValue().intent,
@@ -133,6 +137,32 @@ public abstract class ForegroundService extends Service {
     public void onDestroy() {
         super.onDestroy();
         onServiceShut();
+    }
+
+
+    public static void startForegroundService(Class<? extends ForegroundService> serviceClass){
+        Context context = AppUtils.getApplication();
+        Intent serviceIntent = new Intent(context, serviceClass);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            context.startForegroundService(serviceIntent);  // Android 8.0+
+//            context.bindService(
+//                    serviceIntent,
+//                    new ServiceConnection() {
+//                        @Override
+//                        public void onServiceConnected(ComponentName name, IBinder service) {
+//
+//                        }
+//
+//                        @Override
+//                        public void onServiceDisconnected(ComponentName name) {
+//
+//                        }
+//                    },
+//                    Context.BIND_AUTO_CREATE
+//            );
+        } else {
+            context.startService(serviceIntent);
+        }
     }
 
 }
