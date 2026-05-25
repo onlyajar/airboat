@@ -22,7 +22,6 @@ import java.util.Arrays;
  * ├──────────┼───────────────────────────────────────────
  * │  Tag type│
  * └──────────┴───────────────────────────────────────────
- * 表示一个 BER-TLV 数据对象
  */
 public class BerTlvProtocol implements TlvProtocol {
 
@@ -38,14 +37,27 @@ public class BerTlvProtocol implements TlvProtocol {
                 end++;
             }
             if (end < data.length) end++; // 最后一个 tag 字节 (bit7=0)
-            else throw new IllegalArgumentException("tag out of bounds at offset at offset " + offset);
+            else
+                throw new IllegalArgumentException("tag out of bounds at offset at offset " + offset);
         }
         return Arrays.copyOfRange(data, offset, end);
     }
 
     @Override
+    public boolean isValidTag(byte[] tag) {
+        try {
+            byte[] result = paresTag(tag, 0);
+            return result.length == tag.length;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+
+    @Override
     public int[] decodeLength(byte[] data, int offset) {
-        if (offset >= data.length) throw new IllegalArgumentException("offset out of bounds for length");
+        if (offset >= data.length)
+            throw new IllegalArgumentException("offset out of bounds for length");
 
         int first = data[offset] & 0xFF;
 
@@ -70,7 +82,8 @@ public class BerTlvProtocol implements TlvProtocol {
 
     @Override
     public byte[] encodeLength(int length) {
-        if (length < 0) throw new IllegalArgumentException("length must greater than 0, instead of " + length);
+        if (length < 0)
+            throw new IllegalArgumentException("length must greater than 0, instead of " + length);
         if (length <= 0x7F) {
             return new byte[]{(byte) length};
         } else if (length <= 0xFF) {

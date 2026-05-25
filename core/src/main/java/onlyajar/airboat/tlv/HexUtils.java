@@ -18,7 +18,7 @@ public final class HexUtils {
         char[] hex = new char[bytes.length * 2];
         for (int i = 0; i < bytes.length; i++) {
             int v = bytes[i] & 0xFF;
-            hex[i * 2]     = HEX_CHARS[v >>> 4];
+            hex[i * 2] = HEX_CHARS[v >>> 4];
             hex[i * 2 + 1] = HEX_CHARS[v & 0x0F];
         }
         return new String(hex);

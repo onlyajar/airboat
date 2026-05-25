@@ -1,14 +1,11 @@
 package onlyajar.airboat
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import onlyajar.airboat.app.R
-import onlyajar.airboat.page.PageActivity
-import onlyajar.airboat.service.ForegroundService
 import onlyajar.airboat.service.TaskService
 
 class MainActivity : AppCompatActivity() {
@@ -22,6 +19,7 @@ class MainActivity : AppCompatActivity() {
             insets
         }
         TaskService.start()
+        TlvTest.main(null)
 //        startActivity(Intent(this, PageActivity::class.java))
     }
 }

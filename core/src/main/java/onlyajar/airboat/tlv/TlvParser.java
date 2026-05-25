@@ -1,22 +1,31 @@
 package onlyajar.airboat.tlv;
+
 import java.util.*;
 
-public class BerTlvParser {
+import onlyajar.airboat.tlv.protocol.BerTlvProtocol;
+import onlyajar.airboat.tlv.protocol.TlvProtocol;
 
-    private BerTlvParser() {}
+public final class TlvParser {
+
+    private TlvParser() {
+    }
 
     public static List<TlvData> parse(byte[] data) {
+        return parse(data, new BerTlvProtocol());
+    }
+
+    public static List<TlvData> parse(byte[] data, TlvProtocol tlvProtocol) {
         Objects.requireNonNull(data, "data cannot be null");
         List<TlvData> result = new ArrayList<>();
         int offset = 0;
 
         while (offset < data.length) {
             // 1. parse Tag
-            byte[] tag = BerTlvUtil.parseTag(data, offset);
+            byte[] tag = tlvProtocol.paresTag(data, offset);
             offset += tag.length;
 
             // 2. parse Length
-            int[] lenInfo = BerTlvUtil.parseLength(data, offset);
+            int[] lenInfo = tlvProtocol.decodeLength(data, offset);
             int valueLength = lenInfo[0];
             int lengthFieldSize = lenInfo[1];
             offset += lengthFieldSize;
@@ -25,7 +34,7 @@ public class BerTlvParser {
             if (offset + valueLength > data.length) {
                 throw new IllegalArgumentException(String.format(
                         "Value truncated: tag=%s, expectedLen=%d, available=%d",
-                        TlvData.bytesToHex(tag), valueLength, data.length - offset));
+                        HexUtils.bytesToHex(tag), valueLength, data.length - offset));
             }
             byte[] value = Arrays.copyOfRange(data, offset, offset + valueLength);
             offset += valueLength;
@@ -33,7 +42,7 @@ public class BerTlvParser {
             // 4. is Constructed
             boolean isConstructed = (tag[0] & 0x20) != 0;
             if (isConstructed && valueLength > 0) {
-                List<TlvData> children = parse(value);
+                List<TlvData> children = parse(value, tlvProtocol);
                 result.add(new TlvData(tag, children));
             } else {
                 result.add(new TlvData(tag, value));
@@ -43,24 +52,27 @@ public class BerTlvParser {
         return result;
     }
 
-    public static TlvData findByTag(byte[] data, byte[] searchTag) {
-        List<TlvData> tlvs = parse(data);
-        for (TlvData tlv : tlvs) {
-            if (Arrays.equals(tlv.getTag(), searchTag)) return tlv;
-            TlvData found = tlv.find(searchTag);
-            if (found != null) return found;
-        }
-        return null;
+    public static TlvData findByTag(List<TlvData> tlvList, String tagHex) {
+        return findByTag(tlvList, HexUtils.hexToBytes(tagHex));
     }
 
-    public static TlvData findByTagHex(byte[] data, String tagHex) {
-        return findByTag(data, BerTlvUtil.hexToBytes(tagHex));
-    }
-
-    public static List<TlvData> findAllByTag(byte[] data, byte[] searchTag) {
+    public static TlvData findByTag(List<TlvData> tlvList, byte[] searchTag) {
         List<TlvData> result = new ArrayList<>();
-        List<TlvData> tlvs = parse(data);
-        collectByTag(tlvs, searchTag, result);
+        collectByTag(tlvList, searchTag, result);
+        if (result.isEmpty()) {
+            return null;
+        } else {
+            return result.get(0);
+        }
+    }
+
+    public static List<TlvData> findAllByTag(List<TlvData> tlvList, String tagHex) {
+        return findAllByTag(tlvList, HexUtils.hexToBytes(tagHex));
+    }
+
+    public static List<TlvData> findAllByTag(List<TlvData> tlvList, byte[] searchTag) {
+        List<TlvData> result = new ArrayList<>();
+        collectByTag(tlvList, searchTag, result);
         return result;
     }
 
