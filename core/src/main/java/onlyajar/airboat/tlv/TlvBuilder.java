@@ -24,53 +24,51 @@ public class TlvBuilder {
     }
 
     public TlvBuilder addPrimitive(String tagHex, String valueHex) {
-        tlvList.add(new TlvData(
+        return add(new TlvData(
                 HexUtils.hexToBytes(tagHex),
                 HexUtils.hexToBytes(valueHex)
         ));
-        return this;
     }
 
     public TlvBuilder addPrimitive(String tagHex, byte[] value) {
-        add(new TlvData(
+        return add(new TlvData(
                 HexUtils.hexToBytes(tagHex),
                 value
         ));
-        return this;
     }
 
     public TlvBuilder addPrimitive(byte[] tag, String valueHex) {
-        add(new TlvData(tag, HexUtils.hexToBytes(valueHex)));
-        return this;
+        return add(new TlvData(tag, HexUtils.hexToBytes(valueHex)));
     }
 
     public TlvBuilder addPrimitive(byte[] tag, byte[] value) {
-        add(new TlvData(tag, value));
-        return this;
+        return add(new TlvData(tag, value));
     }
 
-    public TlvBuilder add(TlvData tlv) {
-        tlvList.add(tlv);
-        return this;
-    }
 
     public TlvBuilder addConstructed(String tagHex, BuilderCallback callback) {
         TlvBuilder childBuilder = new TlvBuilder();
         callback.build(childBuilder);
-        tlvList.add(new TlvData(
+        return  add(new TlvData(
                 HexUtils.hexToBytes(tagHex),
                 childBuilder.tlvList
         ));
-        return this;
     }
 
     public TlvBuilder addConstructed(byte[] tag, BuilderCallback callback) {
         TlvBuilder childBuilder = new TlvBuilder();
         callback.build(childBuilder);
-        tlvList.add(new TlvData(
+        return add(new TlvData(
                 tag,
                 childBuilder.tlvList
         ));
+    }
+
+    public TlvBuilder add(TlvData tlv) {
+        boolean isTag = tlvProtocol.isValidTag(tlv.getTag());
+        if(isTag){
+            tlvList.add(tlv);
+        }
         return this;
     }
 
