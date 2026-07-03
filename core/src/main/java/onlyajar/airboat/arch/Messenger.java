@@ -7,8 +7,6 @@ public final class Messenger extends ViewModel {
     private final MutableLiveData<EventData> pageData = new MutableLiveData<>();
     private final MutableLiveData<EventData> controllerData = new MutableLiveData<>();
 
-
-
     public MutableLiveData<EventData> getPageData() {
         return pageData;
     }

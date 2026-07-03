@@ -19,7 +19,6 @@ class MainActivity : AppCompatActivity() {
             insets
         }
         TaskService.start()
-        TlvTest.main(null)
 //        startActivity(Intent(this, PageActivity::class.java))
     }
 }

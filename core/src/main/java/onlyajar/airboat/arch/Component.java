@@ -13,6 +13,7 @@ public class Component extends ViewModel implements Observer<EventData> {
     public Component(Messenger messenger) {
         this.messenger = messenger;
         initDataHandler();
+        messenger.getPageData().observeForever(this);
     }
 
     public Messenger getMessenger() {
@@ -28,6 +29,7 @@ public class Component extends ViewModel implements Observer<EventData> {
             }
         }
     }
+
     @Override
     public void onChanged(EventData eventData) {
         Method method =  dataHandlerMap.get(eventData.getClass());
