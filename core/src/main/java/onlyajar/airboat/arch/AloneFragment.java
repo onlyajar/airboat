@@ -7,7 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
 
-public class PageFragment extends ArchFragment implements PageScreen{
+public class AloneFragment extends ArchFragment implements PageScreen{
 
     private Messenger messenger;
     @Override

@@ -1,54 +1,52 @@
 package onlyajar.airboat.arch;
 
+import androidx.core.util.Consumer;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
 public class Component extends ViewModel implements Observer<EventData> {
-    private final Map<Class<?>, Method> dataHandlerMap = new HashMap<>();
+
+    private final Map<Class<? extends EventData>, Consumer<? extends EventData>> registerHandlerMap = new HashMap<>();
     private final Messenger messenger;
+
     public Component(Messenger messenger) {
         this.messenger = messenger;
-        initDataHandler();
         messenger.getPageData().observeForever(this);
+        registerObserves();
+    }
+
+    public void registerObserves() {
+
     }
 
     public Messenger getMessenger() {
         return messenger;
     }
 
-    private void initDataHandler(){
-        Method[] methods = this.getClass().getDeclaredMethods();
-        for(Method m : methods){
-            if (m.getParameterCount() == 1 && EventData.class.isAssignableFrom(m.getParameterTypes()[0])) {
-                m.setAccessible(true);
-                dataHandlerMap.put(m.getParameterTypes()[0], m);
-            }
-        }
+
+    public <D extends EventData> void observe(Class<D> clazz, Consumer<D> consumer) {
+        registerHandlerMap.put(clazz, consumer);
     }
 
     @Override
     public void onChanged(EventData eventData) {
-        Method method =  dataHandlerMap.get(eventData.getClass());
-        if (method != null) {
-            try {
-                method.invoke(this, eventData);
-            } catch (Exception e) {
-                //
-            }
-        }else {
+        Consumer consumer = registerHandlerMap.get(eventData.getClass());
+        if (consumer != null) {
+            consumer.accept(eventData);
+        } else {
             System.out.println(eventData.getClass().getSimpleName());
         }
+
     }
 
     @Override
     protected void onCleared() {
         super.onCleared();
         messenger.getControllerData().removeObserver(this);
-        dataHandlerMap.clear();
+        registerHandlerMap.clear();
     }
 
 }
