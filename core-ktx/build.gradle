@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace 'onlyajar.airboat'
+    namespace 'onlyajar.airboat.ktx'
     compileSdk {
         version = release(36)
     }
