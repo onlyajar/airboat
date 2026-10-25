@@ -1,6 +1,11 @@
+import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
+import com.vanniktech.maven.publish.JavadocJar
+import com.vanniktech.maven.publish.SourcesJar
 plugins {
     alias(libs.plugins.android.library)
     id 'maven-publish'
+    id "com.vanniktech.maven.publish" version "0.37.0"
+    id 'signing'
 }
 
 android {
@@ -11,7 +16,7 @@ android {
 
     defaultConfig {
         minSdk 21
-
+        version = '1.0.0'
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
     }
@@ -26,12 +31,12 @@ android {
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11
     }
-    publishing {
-        singleVariant('release') {
-            withSourcesJar()
-            withJavadocJar()
-        }
-    }
+//    publishing {
+//        singleVariant('release') {
+//            withSourcesJar()
+//            withJavadocJar()
+//        }
+//    }
 }
 
 dependencies {
@@ -42,17 +47,51 @@ dependencies {
     androidTestImplementation libs.androidx.junit
     androidTestImplementation libs.androidx.espresso.core
 }
-group = 'com.github.onlyajar.airboat'
-version = '0.0.1.beta2'
-afterEvaluate {
-    publishing {
-        publications {
-            release(MavenPublication) {
-                from components.release
-                groupId = project.group
-                artifactId = project.name
-                version = project.version
+signing {
+    useGpgCmd()
+}
+mavenPublishing {
+    configure(new AndroidSingleVariantLibrary(
+            // the first parameter configures the -javadoc artifact, possible values:
+            // - `JavadocJar.None()` don't publish this artifact
+            // - `JavadocJar.Empty()` publish an empty jar
+            // - `JavadocJar.Javadoc()` to publish standard javadocs
+            // - `JavadocJar.Dokka("dokkaHtml")` when using Kotlin with Dokka, where `dokkaHtml` is the name of the Dokka task that should be used as input
+            new JavadocJar.Empty(),
+            // configures the -sources artifact, possible values:
+            // - `SourcesJar.None()` don't publish this artifact
+            // - `SourcesJar.Empty()` publish an empty jar
+            // - `SourcesJar.Sources()` publish the sources
+            new SourcesJar.Sources(),
+            // which variant is published
+            "release"
+    ))
+    coordinates("io.github.onlyajar", "airboat", "1.0.0")
+    pom {
+        name = 'airboat'
+        description = 'android airboat'
+        url = 'https://github.com/onlyajar/airboat'
+        inceptionYear = "2026"
+        licenses {
+            license {
+                name = "The Apache License, Version 2.0"
+                url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+                distribution = "http://www.apache.org/licenses/LICENSE-2.0.txt"
             }
         }
+        developers {
+            developer {
+                id = "onlyajar"
+                name = "onlyajar"
+                url = "https://github.com/onlyajar/"
+            }
+        }
+        scm {
+            url = "https://github.com/onlyajar/airboat/"
+            connection = "scm:git:git://github.com/onlyajar/airboat.git"
+            developerConnection = "scm:git:ssh://git@github.com/onlyajar/airboat.git"
+        }
     }
+    publishToMavenCentral()
+    signAllPublications()
 }
